@@ -1,15 +1,26 @@
 import {combineReducers} from 'redux'
 
-import {ADD_POST, REMOVE_FROM_POST} from '../actions/actions';
-
 import {GET_ALL_CATEGORIES} from '../actions/categoriesActions';
-import {GET_POSTS} from '../actions/postsActions';
-import {GET_COMMENTS} from '../actions/commentsActions';
+import {GET_POSTS, GET_POST} from '../actions/postsActions';
+import {GET_COMMENTS, UPDATE_COMMENT, UPDATE_SORT_ORDER} from '../actions/commentsActions';
 
-const initialPostState = {}
+const initialPostState = {
+  timestamp: '',
+  title: '',
+  body: '',
+  author: '',
+  category: '',
+  voteScore: 1,
+  deleted: false,
+  commentCount: 0
+}
+
 const initialPostsState = {posts: []}
 const initialCategoriesState = {categories: []}
 const initialCommentsState = {comments: []}
+const initialCommentState = {}
+const initialSortOrderState = {sortOrder: 1};
+
 
 function getAllCategories (state = initialCategoriesState, action) {
   const {categories} = action
@@ -37,6 +48,18 @@ function getPosts (state = initialPostsState, action) {
   }
 }
 
+function getPost (state = initialPostState, action) {
+  const {post} = action
+  switch (action.type) {
+    case GET_POST :
+      return {
+        ...state[post] = post,
+      }
+    default :
+      return state
+  }
+}
+
 function getComments (state = initialCommentsState, action) {
   const {comments} = action
   switch (action.type) {
@@ -50,34 +73,37 @@ function getComments (state = initialCommentsState, action) {
   }
 }
 
-function post (state = initialPostState, action) {
-//   const { id, timestamp, title, body, author, category } = action
-
+function updateComment (state = initialCommentState, action) {
+  const {comment} = action
   switch (action.type) {
-    case ADD_POST :
+    case UPDATE_COMMENT :
       return {
-        ...state,
-        // [id]: {
-        //   ...state[day],
-        //   [meal]: recipe.label,
-        // }
-      }
-    case REMOVE_FROM_POST :
-      return {
-        ...state,
-        // [day]: {
-        //   ...state[day],
-        //   [meal]: null,
-        // }
+        ...state[comment] = comment,
       }
     default :
       return state
   }
 }
 
+function getSortOrder (state = initialSortOrderState, action) {
+    const { order } = action
+  
+    switch (action.type) {
+      case UPDATE_SORT_ORDER :
+        return {
+          ...state,
+          sortOrder: order,
+        }
+      default :
+        return state
+    }
+  }
+
 export default combineReducers({
   getAllCategories,
   getPosts,
+  getPost,
   getComments,
-  post,
+  updateComment,
+  getSortOrder
 })

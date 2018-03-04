@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {List, ListItem, Subheader, Paper, DropDownMenu, FlatButton, MenuItem, Divider} from 'material-ui';
-import {Route, withRouter, Switch} from 'react-router-dom';
+import {List, ListItem, Subheader, Paper, DropDownMenu, FlatButton, MenuItem, Divider, IconButton, FontIcon, Avatar} from 'material-ui';
+import {withRouter} from 'react-router-dom';
 import { connect } from 'react-redux';
-import { fetchPosts } from '../actions/postsActions';
+import { fetchPosts, votePost, updateSortOrder } from '../actions/postsActions';
+import {blue500, red500, gray200} from 'material-ui/styles/colors';
+import sortBy from 'sort-by';
 
 class PostList extends Component {
     
@@ -12,27 +14,31 @@ class PostList extends Component {
         category: PropTypes.string
     }
 
-    state = {
-        sortOrder: 1
-    }
-
     componentDidMount () {
-        const {match} = this.props;
-        this.props.getPosts(match.params.id);
+        const {category} = this.props;
+        this.props.getPosts(category);
     }
 
-    handleClick = (post) => {
-        // const {onClickPost} = this.props;
-        // if (onClickPost) {
-        //     onClickPost.call(this, post);
-        // }
-        this.props.history.push(`/post/detail/${post.id}`);
+    handlePostItemClick = (post) => {
+        this.props.history.push('/post/detail', {postId: post.id});
+    }
+
+    handleNewPostClick = (category) => {
+        this.props.history.push(`/post/form/new`, {category});
     }
 
     handleChangeDropDownMenu = (event, index, sortOrder) => {
-        this.setState({
-            sortOrder
-        });
+        this.props.updateSortOrder(sortOrder);
+    }
+
+    handleVoteUp (post, event) {
+        event.stopPropagation();
+        this.props.votePost([Object.assign(post, {option: 'upVote'}), this.props.category]);
+    }
+
+    handleVoteDown (post, event) {
+        event.stopPropagation();
+        this.props.votePost([Object.assign(post, {option: 'downVote'}), this.props.category]);
     }
 
     getDate (timestamp) {
@@ -41,8 +47,7 @@ class PostList extends Component {
     }
 
     render () {
-        const {sortOrder} = this.state;
-        const {postList} = this.props;
+        const {postList, category, sortOrder} = this.props;
         return (
             <Paper zDepth={1} style={{margin: '10px'}}>
                 <List>
@@ -58,20 +63,52 @@ class PostList extends Component {
                                 </DropDownMenu>
                             </div>
                             <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-                                <FlatButton label="add Post" primary={true} />
+                                <FlatButton label="add Post" primary={true} onClick={this.handleNewPostClick.bind(this, category)} />
                             </div>
                         </div>
                     </Subheader>
                     {postList.posts.map((post, index) => (
                         <div key={post.id}>
                             <Divider />
-                            <ListItem primaryText={post.title} onClick={this.handleClick.bind(this, post)}>
-                                <div style={{display:'flex', alignItems: 'baseline', padding: '4px 0px 4px 0px'}}>
-                                    <div style={{display:'flex'}}>
-                                        {post.category}
+                            <ListItem onClick={this.handlePostItemClick.bind(this, post)}>
+                                <div style={{display:'flex', alignItems: 'baseline'}}>
+                                    <div style={{display:'flex', flexDirection:'column'}}>
+                                        <div style={{display:'flex', padding: '4px'}}>
+                                            {post.title}
+                                        </div>
+                                        <div style={{display:'flex', padding: '4px'}}>
+                                            {post.category}
+                                        </div>
                                     </div>
                                     <div style={{display:'flex', flexGrow: '1', justifyContent: 'flex-end'}}>
                                         {this.getDate(post.timestamp)}
+                                    </div>
+                                </div>
+                                <div style={{display:'flex', justifyContent: 'flex-end'}}>
+                                    <div style={{display:'flex', flexGrow: '1', alignItems: 'center'}}>
+                                        <Avatar backgroundColor={gray200} size={25}>
+                                            {post.voteScore}
+                                        </Avatar>
+                                        <IconButton
+                                            tooltip="Vote up"
+                                            onClick={this.handleVoteUp.bind(this, post)}>
+                                            <FontIcon className="material-icons" color={blue500}>
+                                                thumb_up
+                                            </FontIcon>
+                                        </IconButton>   
+                                        <IconButton
+                                            tooltip="Vote down"
+                                            onClick={this.handleVoteDown.bind(this, post)}>
+                                            <FontIcon className="material-icons" color={red500}>
+                                                thumb_down
+                                            </FontIcon>
+                                        </IconButton>
+                                    </div>
+                                    <div style={{display:'flex', alignItems: 'center', flexDirection: 'column-reverse'}}>
+                                        <Avatar backgroundColor={gray200} size={25}>
+                                            {post.commentCount}
+                                        </Avatar>
+                                        Comments
                                     </div>
                                 </div>
                             </ListItem>
@@ -83,15 +120,19 @@ class PostList extends Component {
     }
 }
 
-function mapStateToProps ({ getPosts }) {
+function mapStateToProps ({ getPosts, getSortOrder }) {
+    getPosts.posts = getPosts.posts.sort(getSortOrder.sortOrder === 1 ? sortBy('-voteScore') : sortBy('-timestamp'));
     return {
-      postList: getPosts
+      postList: getPosts,
+      sortOrder: getSortOrder.sortOrder
     }
 }
   
 function mapDispatchToProps (dispatch) {
     return {
         getPosts: (data) => dispatch(fetchPosts(data)),
+        votePost: (data) => dispatch(votePost(data)),
+        updateSortOrder: (data) => dispatch(updateSortOrder(data))
     }
 }
   

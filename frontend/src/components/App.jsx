@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { addPost, removeFromPost } from '../actions/actions'
 import { fetchCategories } from '../actions/categoriesActions'
 import CategoryList from './CategoryList';
 import PostList from './PostList';
@@ -8,25 +7,16 @@ import {AppBar} from 'material-ui';
 import {Route, withRouter, Switch} from 'react-router-dom';
 import CategoryView from './CategoryView';
 import PostDetail from './PostDetail';
+import PostForm from './PostForm';
 
 class App extends Component {
-  state = {
-    foodModalOpen: false,
-    meal: null,
-    day: null,
-    food: null,
-    ingredientsModalOpen: false,
-    loadingFood: false,
-    categories: [],
-    posts: []
-  }
 
   componentDidMount () {
     this.props.requestCategories();
   }
   
   handleClickCategory  = (category) => {
-    this.props.history.push(`/category/${category.path}`);
+    this.props.history.push('/category', {category: category.path});
   }
 
   render() {
@@ -41,20 +31,20 @@ class App extends Component {
               />
               <div className='container'>
                 <CategoryList categories={this.props.listCategories.categories} onClickCategory={this.handleClickCategory}/>
-                <PostList onClickPost={(a) => {window.console.log(a)}}/>
+                <PostList />
               </div>
           </div>
         )}/>
-        <Route path='/category/:id' component={CategoryView}/>
-        <Route path='/post/detail/:id' component={PostDetail}/>
+        <Route exact path='/category' component={CategoryView} />
+        <Route exact path='/post/detail' component={PostDetail} />
+        <Route exact path='/post/form' component={PostForm} />
+        <Route exact path='/post/form/new' component={PostForm} />
       </Switch>
     )
   }
 }
 
 function mapStateToProps ({ post, getAllCategories }) {
-  //const dayOrder = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-
   return {
     postList: post,
     listCategories: getAllCategories
@@ -63,9 +53,7 @@ function mapStateToProps ({ post, getAllCategories }) {
 
 function mapDispatchToProps (dispatch) {
   return {
-    addNewPost: (data) => dispatch(addPost(data)),
-    removePost: (data) => dispatch(removeFromPost(data)),
-    requestCategories: () => dispatch(fetchCategories()),
+    requestCategories: () => dispatch(fetchCategories())
   }
 }
 

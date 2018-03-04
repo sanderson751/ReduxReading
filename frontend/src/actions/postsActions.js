@@ -1,20 +1,24 @@
 import axios from 'axios';
+import { fetchComments } from './commentsActions';
+
 export const GET_POSTS = 'GET_POSTS';
+export const GET_POST = 'GET_POST';
+export const UPDATE_SORT_ORDER = 'UPDATE_SORT_ORDER';
 
 export const getPosts = (posts) => ({
   type: GET_POSTS,
   posts
 });
 
+export const getPost = (post) => ({
+  type: GET_POST,
+  post
+});
+
 export const fetchPosts = (category) => {
-  // Returns a dispatcher function
-  // that dispatches an action at a later time
   return (dispatch) => {
-    // Returns a promise
     return axios.get(category ? `http://localhost:3001/${category}/posts` : 'http://localhost:3001/posts', {headers: { 'Authorization': 'ABC1234'}})
       .then(response => {
-        // Dispatch another action
-        // to consume data
         dispatch(getPosts(response.data))
       })
       .catch(error => {
@@ -22,3 +26,73 @@ export const fetchPosts = (category) => {
       });
   };
 };
+
+export const fetchPost = (id) => {
+  return (dispatch) => {
+    return axios.get(`http://localhost:3001/posts/${id}`, {headers: { 'Authorization': 'ABC1234'}})
+      .then(response => {
+        dispatch(getPost(response.data));
+        dispatch(fetchComments(response.data.id));
+      })
+      .catch(error => {
+        throw(error);
+      });
+  };
+};
+
+export const editPost = (post) => {
+  return (dispatch) => {
+    return axios.put(`http://localhost:3001/posts/${post.id}`, post, {headers: { 'Authorization': 'ABC1234'}})
+      .then(response => {
+        dispatch(getPost(response.data))
+      })
+      .catch(error => {
+        throw(error);
+      });
+  };
+};
+
+export const addPost = (post) => {
+  return (dispatch) => {
+    return axios.post(`http://localhost:3001/posts`, post, {headers: { 'Authorization': 'ABC1234'}})
+      .then(response => {
+        dispatch(getPost(response.data))
+      })
+      .catch(error => {
+        throw(error);
+      });
+  };
+};
+
+export const deletePost = (post) => {
+  return (dispatch) => {
+    return axios.delete(`http://localhost:3001/posts/${post.id}`, {headers: { 'Authorization': 'ABC1234'}})
+      .then(response => {
+        return true;
+      })
+      .catch(error => {
+        throw(error);
+      });
+  };
+};
+
+export const votePost = (data) => {
+  const post = data[0];
+  const category = data[1];
+  return (dispatch) => {
+    return axios.post(`http://localhost:3001/posts/${post.id}`, post, {headers: { 'Authorization': 'ABC1234'}})
+      .then(response => {
+        dispatch(fetchPosts(category))
+      })
+      .catch(error => {
+        throw(error);
+      });
+  };
+};
+
+export function updateSortOrder (order) {
+  return {
+    type: UPDATE_SORT_ORDER,
+    order
+  }
+}

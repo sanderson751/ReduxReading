@@ -1,38 +1,30 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import {Paper, TextField, IconButton, FontIcon, AppBar, List, ListItem, Subheader, MenuItem, DropDownMenu, Divider} from 'material-ui';
+import {withRouter} from 'react-router-dom';
+import {Paper, IconButton, FlatButton, FontIcon, AppBar} from 'material-ui';
 import CommentList from './CommentList';
+import { connect } from 'react-redux';
+import { fetchPost, deletePost} from '../actions/postsActions';
+import { fetchCategories } from '../actions/categoriesActions'
+import PostFormBodyComponents from './PostFormBodyComponents';
 
 class PostDetail extends Component {
-    
-    static propTypes = {
-        onClickPost: PropTypes.func,
-        category: PropTypes.object
-    }
-
-    state = {
-        post: {
-            id: '',
-            timestamp: '',
-            title: '',
-            body: '',
-            author: '',
-            category: '',
-            voteScore: 1,
-            deleted: false,
-            commentCount: 0
-        }
-    }
 
     componentDidMount () {
-        const {match} = this.props;
-        this.props.getPost(match.params.id);
+        const {location} = this.props;
+        this.props.getCategories();
+        this.props.getPostById(location.state.postId);
     }
 
-    handleClick = (post, a) => {
-        const {onClickPost} = this.props;
-        if (onClickPost) {
-            onClickPost.call(this, post);
+    handleClickEdit = () => {
+        const {post} = this.props;
+        this.props.history.push('/post/form', {postId: post.id});
+    }
+
+    handleClickDelete = () => {
+        const {post} = this.props;
+        let isDeleted = this.props.deletePost(post);
+        if (isDeleted) {
+            this.props.history.goBack();
         }
     }
 
@@ -48,49 +40,48 @@ class PostDetail extends Component {
     }
 
     render () {
-        const {post} = this.state;
+        let {post, commentsList, categories} = this.props;
         return (
             <div>
                 <AppBar
-                    title={post.title ? `Redux-Reading - ${post.title}` : 'Redux-Reading - New post'}
+                    title={post && post.title ? `Redux-Reading - ${post.title}` : 'Redux-Reading'}
                     iconElementLeft={<IconButton><FontIcon className="material-icons">arrow_back</FontIcon></IconButton>}
                     onLeftIconButtonClick={() => {this.props.history.goBack()}}
                 />
                 <div className="container">
                     <Paper zDepth={1} style={{margin: '10px'}}>
-                        <div style={{padding : '10px'}}>
-                            <TextField
-                                hintText="Title"
-                                floatingLabelText="Title"
-                                fullWidth />
-                            <TextField
-                                hintText="Author"
-                                floatingLabelText="Author"
-                                fullWidth />
-                            <TextField
-                                hintText="Body"
-                                floatingLabelText="Body"
-                                fullWidth />
-                            <TextField
-                                hintText="Create at"
-                                floatingLabelText="Create at"
-                                defaultValue={new Date().toLocaleString("en-US")}
-                                disabled
-                                fullWidth />
-                            <TextField
-                                hintText="Vote Score"
-                                floatingLabelText="Vote Score"
-                                value={post.voteScore}
-                                disabled
-                                fullWidth />
+                        <div style={{display: 'flex', flexDirection: 'column', padding: '10px'}}>
+                            <PostFormBodyComponents post={post} categories={categories} disabled/>
+                            <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+                                <FlatButton label="Edit" onClick={this.handleClickEdit} />
+                                <FlatButton label="Delete" secondary={true} onClick={this.handleClickDelete} />
+                            </div>
                         </div>
                     </Paper>
-                    <CommentList post={post} />
+                    <CommentList commentsList={commentsList} parentId={post.id} />
                 </div>
             </div>
         )
     }
-
 }
 
-export default PostDetail;
+function mapStateToProps ({ getPost, getComments, getAllCategories }) {
+    return {
+      post: getPost,
+      commentsList: getComments,
+      categories: getAllCategories
+    }
+}
+  
+function mapDispatchToProps (dispatch) {
+    return {
+        getPostById: (data) => dispatch(fetchPost(data)),
+        deletePost: (data) => dispatch(deletePost(data)),
+        getCategories: () => dispatch(fetchCategories())
+    }
+}
+
+export default withRouter(connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(PostDetail));
