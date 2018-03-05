@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {List, ListItem, Subheader, Paper, DropDownMenu, FlatButton, MenuItem, Divider, Dialog, IconButton, FontIcon, Avatar} from 'material-ui';
 import {withRouter} from 'react-router-dom';
 import { connect } from 'react-redux';
-import { fetchComments, addComment, editComment, deleteComment, voteComment, updateSortOrder } from '../actions/commentsActions';
+import { addComment, editComment, deleteComment, voteComment, updateSortOrder } from '../actions/commentsActions';
 import CommentForm from './CommentForm';
 import {blue500, red500, gray200} from 'material-ui/styles/colors';
 import uuid from 'uuid';
@@ -41,14 +41,13 @@ class CommentList extends Component {
 
     handleSaveCommentClick = () => {
         const {comment} = this.state;
-        const {parentId, addComment, editComment, getComments} = this.props;
+        const {parentId, addComment, editComment} = this.props;
         if (comment.id) {
             editComment(comment);
         } else {
             addComment(Object.assign(comment, {id: uuid(), parentId: parentId, timestamp: new Date().getTime()}));
         }
         this.closeCommentModal();
-        //getComments && getComments(parentId);
     }
 
     handleCommentChange = (comment) => {
@@ -213,7 +212,6 @@ function mapStateToProps ({ getComments, getSortOrder }) {
   
 function mapDispatchToProps (dispatch) {
     return {
-        getComments: (data) => dispatch(fetchComments(data)),
         addComment: (data) => dispatch(addComment(data)),
         editComment: (data) => dispatch(editComment(data)),
         deleteComment: (data) => dispatch(deleteComment(data)),
