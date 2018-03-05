@@ -71,22 +71,25 @@ class PostFormBodyComponents extends Component {
     }
 
     handleChange (field, event, value) {
+        const {post} = this.state;
         this.setState({
-            post: Object.assign(this.state.post, {[field]: value})
+            post: Object.assign(post, {[field]: value})
         });
     }
 
     handleChangeCategory (field, event, value) {
         const {categories} = this.props;
+        const {post} = this.state;
         this.setState({
-            post: Object.assign(this.state.post, {[field]: categories.categories[value].name})
+            post: Object.assign(post, {[field]: categories.categories[value].name})
         });
     }
 
     callChange = () => {
         const {onChange} = this.props;
+        const {post} = this.state;
         if (onChange) {
-            onChange.call(this, this.state.post);
+            onChange.call(this, post);
         }
     }
 

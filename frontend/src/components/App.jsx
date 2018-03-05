@@ -12,11 +12,13 @@ import PostForm from './PostForm';
 class App extends Component {
 
   componentDidMount () {
-    this.props.requestCategories();
+    const {requestCategories} = this.props;
+    requestCategories && requestCategories();
   }
   
   handleClickCategory  = (category) => {
-    this.props.history.push('/category', {category: category.path});
+    const {history} = this.props;
+    history && history.push('/category', {category: category.path});
   }
 
   render() {

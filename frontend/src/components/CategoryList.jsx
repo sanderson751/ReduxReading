@@ -11,9 +11,7 @@ class CategoryList extends Component {
 
     handleClick = (category) => {
         const { onClickCategory } = this.props;
-        if (onClickCategory) {
-            onClickCategory.call(this, category);
-        }
+        onClickCategory && onClickCategory.call(this, category);
     }
 
     render () {

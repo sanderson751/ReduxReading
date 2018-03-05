@@ -35,7 +35,7 @@ export const editComment = (comment) => {
   return (dispatch) => {
     return axios.put(`http://localhost:3001/comments/${comment.id}`, comment, {headers: { 'Authorization': 'ABC1234'}})
       .then(response => {
-        dispatch(updateComment(response.data))
+        dispatch(fetchComments(comment.parentId));
       })
       .catch(error => {
         throw(error);
@@ -47,7 +47,7 @@ export const addComment = (comment) => {
   return (dispatch) => {
     return axios.post(`http://localhost:3001/comments`, comment, {headers: { 'Authorization': 'ABC1234'}})
       .then(response => {
-        dispatch(updateComment(response.data))
+        dispatch(fetchComments(comment.parentId));
       })
       .catch(error => {
         throw(error);

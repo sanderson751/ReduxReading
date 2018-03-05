@@ -10,8 +10,6 @@ import {Provider} from 'react-redux';
 import {BrowserRouter} from 'react-router-dom';
 import thunk from 'redux-thunk';
 
-//ReactDOM.render(<App />, document.getElementById('root'));
-
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
 const store = createStore(

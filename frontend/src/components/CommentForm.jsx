@@ -30,9 +30,7 @@ class CommentForm extends Component {
 
     componentDidMount () {
         const {comment} = this.props;
-        if (comment) {
-            this.updateComment(Object.assign({}, comment));
-        }
+        comment && this.updateComment(Object.assign({}, comment));
     }
 
     updateComment = (comment) => {
@@ -59,9 +57,8 @@ class CommentForm extends Component {
 
     callChange () {
         const {onChange} = this.props;
-        if (onChange) {
-            onChange.call(this, this.state.comment);
-        }
+        const {comment} = this.state;
+        onChange && onChange.call(this, comment);
     }
 
     render () {

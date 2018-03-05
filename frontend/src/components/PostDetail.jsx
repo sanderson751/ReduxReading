@@ -10,21 +10,21 @@ import PostFormBodyComponents from './PostFormBodyComponents';
 class PostDetail extends Component {
 
     componentDidMount () {
-        const {location} = this.props;
-        this.props.getCategories();
-        this.props.getPostById(location.state.postId);
+        const {location, getCategories, getPostById} = this.props;
+        getCategories && getCategories();
+        getPostById && getPostById(location.state.postId);
     }
 
     handleClickEdit = () => {
-        const {post} = this.props;
-        this.props.history.push('/post/form', {postId: post.id});
+        const {post, history} = this.props;
+        history.push('/post/form', {postId: post.id});
     }
 
     handleClickDelete = () => {
-        const {post} = this.props;
-        let isDeleted = this.props.deletePost(post);
+        const {post, deletePost, history} = this.props;
+        let isDeleted = deletePost(post);
         if (isDeleted) {
-            this.props.history.goBack();
+            history.goBack();
         }
     }
 
@@ -40,13 +40,13 @@ class PostDetail extends Component {
     }
 
     render () {
-        let {post, commentsList, categories} = this.props;
+        let {post, commentsList, categories, history} = this.props;
         return (
             <div>
                 <AppBar
                     title={post && post.title ? `Redux-Reading - ${post.title}` : 'Redux-Reading'}
                     iconElementLeft={<IconButton><FontIcon className="material-icons">arrow_back</FontIcon></IconButton>}
-                    onLeftIconButtonClick={() => {this.props.history.goBack()}}
+                    onLeftIconButtonClick={() => {history.goBack()}}
                 />
                 <div className="container">
                     <Paper zDepth={1} style={{margin: '10px'}}>

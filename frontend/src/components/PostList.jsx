@@ -15,30 +15,35 @@ class PostList extends Component {
     }
 
     componentDidMount () {
-        const {category} = this.props;
-        this.props.getPosts(category);
+        const {category, getPosts} = this.props;
+        getPosts && getPosts(category);
     }
 
     handlePostItemClick = (post) => {
-        this.props.history.push('/post/detail', {postId: post.id});
+        const {history} = this.props;
+        history && history.push('/post/detail', {postId: post.id});
     }
 
     handleNewPostClick = (category) => {
-        this.props.history.push(`/post/form/new`, {category});
+        const {history} = this.props;
+        history && history.push(`/post/form/new`, {category});
     }
 
     handleChangeDropDownMenu = (event, index, sortOrder) => {
-        this.props.updateSortOrder(sortOrder);
+        const {updateSortOrder} = this.props;
+        updateSortOrder && updateSortOrder(sortOrder);
     }
 
     handleVoteUp (post, event) {
         event.stopPropagation();
-        this.props.votePost([Object.assign(post, {option: 'upVote'}), this.props.category]);
+        const {votePost, category} = this.props;
+        votePost && votePost([Object.assign(post, {option: 'upVote'}), category]);
     }
 
     handleVoteDown (post, event) {
         event.stopPropagation();
-        this.props.votePost([Object.assign(post, {option: 'downVote'}), this.props.category]);
+        const {votePost, category} = this.props;
+        votePost && votePost([Object.assign(post, {option: 'downVote'}), category]);
     }
 
     getDate (timestamp) {

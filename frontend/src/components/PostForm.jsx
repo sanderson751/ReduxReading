@@ -10,22 +10,23 @@ import PostFormBodyComponents from './PostFormBodyComponents';
 class PostForm extends Component {
     
     componentDidMount () {
-        const {location} = this.props;
-        this.props.getCategories();
-        this.props.getPostById(location.state.postId ? location.state.postId : '');
+        const {location, getCategories, getPostById} = this.props;
+        getCategories && getCategories();
+        getPostById && getPostById(location.state.postId ? location.state.postId : '');
+        
         if (location.state.category) {
             this._category = location.state.category;
         }
     }
 
     handleFormBodyChange = (postData) => {
-        const {post} = this.props;
+        const {post, editPost, addPost, history} = this.props;
         if (post.id) {
-            this.props.editPost(Object.assign(post, postData));
+            editPost(Object.assign(post, postData));
         } else {
-            this.props.addPost(Object.assign(postData, {id: uuid(), timestamp: new Date().getTime()}));
+            addPost(Object.assign(postData, {id: uuid(), timestamp: new Date().getTime()}));
         }
-        this.props.history.goBack();
+        history.goBack();
     }
     
     getDate (timestamp) {
@@ -34,17 +35,17 @@ class PostForm extends Component {
     }
 
     render () {
-        const {post, categories} = this.props;
+        const {post, categories, history, location} = this.props;
         return (
             <div>
                 <AppBar
                     title={post && post.title ? `Redux-Reading - ${post.title}` : 'Redux-Reading - New post'}
                     iconElementLeft={<IconButton><FontIcon className="material-icons">arrow_back</FontIcon></IconButton>}
-                    onLeftIconButtonClick={() => {this.props.history.goBack()}}
+                    onLeftIconButtonClick={() => {history.goBack()}}
                 />
                 <div className="container">
                     <Paper zDepth={1} style={{margin: '10px'}}>
-                        <PostFormBodyComponents key={`${post.id}_${this.props.location.state.postId}`} category={this._category} categories={categories} post={post} onChange={this.handleFormBodyChange}/>
+                        <PostFormBodyComponents key={`${post.id}_${location.state.postId}`} category={this._category} categories={categories} post={post} onChange={this.handleFormBodyChange}/>
                     </Paper>
                 </div>
             </div>

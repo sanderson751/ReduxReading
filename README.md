@@ -23,3 +23,14 @@ Information about the API server and how to use it can be found in its [README f
 
 # ReduxReading
 Projeto curso react-redux
+
+ReduxReading
+
+Bibliotecas adicionais ao projeto:
+
+- axios
+- material-ui
+- redux-thunk
+- sort-by
+- uuid
+

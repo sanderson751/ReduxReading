@@ -21,7 +21,8 @@ class CommentList extends Component {
     }
 
     componentDidMount () {
-        this.props.getComments(this.props.parentId);
+        const {getComments, parentId} = this.props;
+        getComments && getComments(parentId);
     }
 
     handleClick = (comment, viewComment) => {
@@ -29,7 +30,8 @@ class CommentList extends Component {
     }
 
     handleChangeDropDownMenu = (event, index, sortOrder) => {
-        this.props.updateSortOrder(sortOrder);
+        const {updateSortOrder} = this.props;
+        updateSortOrder && updateSortOrder(sortOrder);
     }
 
     getDate (timestamp) {
@@ -39,14 +41,14 @@ class CommentList extends Component {
 
     handleSaveCommentClick = () => {
         const {comment} = this.state;
-        const {parentId} = this.props;
+        const {parentId, addComment, editComment, getComments} = this.props;
         if (comment.id) {
-            this.props.editComment(comment);
+            editComment(comment);
         } else {
-            this.props.addComment(Object.assign(comment, {id: uuid(), parentId: parentId, timestamp: new Date().getTime()}));
+            addComment(Object.assign(comment, {id: uuid(), parentId: parentId, timestamp: new Date().getTime()}));
         }
         this.closeCommentModal();
-        this.props.getComments(parentId);
+        //getComments && getComments(parentId);
     }
 
     handleCommentChange = (comment) => {
@@ -87,17 +89,20 @@ class CommentList extends Component {
 
     handleVoteUp (comment, event) {
         event.stopPropagation();
-        this.props.voteComment(Object.assign(comment, {option: 'upVote'}));
+        const {voteComment} = this.props;
+        voteComment && voteComment(Object.assign(comment, {option: 'upVote'}));
     }
 
     handleVoteDown (comment, event) {
         event.stopPropagation();
-        this.props.voteComment(Object.assign(comment, {option: 'downVote'}));
+        const {voteComment} = this.props;
+        voteComment && voteComment(Object.assign(comment, {option: 'downVote'}));
     }
 
     handleDeleteComment (comment, event) {
         event.stopPropagation();
-        this.props.deleteComment(comment);
+        const {deleteComment} = this.props;
+        deleteComment && deleteComment(comment);
     }
 
     handleEditComment (comment, viewComment, event) {
