@@ -22,7 +22,7 @@ class PostDetail extends Component {
 
     handleClickDelete = () => {
         const {post, deletePost, history} = this.props;
-        let isDeleted = deletePost(post);
+        let isDeleted = deletePost([post]);
         if (isDeleted) {
             history.goBack();
         }

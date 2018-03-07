@@ -64,11 +64,13 @@ export const addPost = (post) => {
   };
 };
 
-export const deletePost = (post) => {
+export const deletePost = (data) => {
+  const post = data[0];
+  const category = data[1];
   return (dispatch) => {
     return axios.delete(`http://localhost:3001/posts/${post.id}`, {headers: { 'Authorization': 'ABC1234'}})
       .then(response => {
-        return true;
+        dispatch(fetchPosts(category))
       })
       .catch(error => {
         throw(error);

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {List, ListItem, Subheader, Paper, DropDownMenu, FlatButton, MenuItem, Divider, IconButton, FontIcon, Avatar} from 'material-ui';
 import {withRouter} from 'react-router-dom';
 import { connect } from 'react-redux';
-import { fetchPosts, votePost, updateSortOrder } from '../actions/postsActions';
+import { fetchPosts, votePost, updateSortOrder, deletePost } from '../actions/postsActions';
 import {blue500, red500, gray200} from 'material-ui/styles/colors';
 import sortBy from 'sort-by';
 
@@ -15,6 +15,10 @@ class PostList extends Component {
     }
 
     componentDidMount () {
+        this.getInitList();
+    }
+
+    getInitList = () => {
         const {category, getPosts} = this.props;
         getPosts && getPosts(category);
     }
@@ -44,6 +48,18 @@ class PostList extends Component {
         event.stopPropagation();
         const {votePost, category} = this.props;
         votePost && votePost([Object.assign(post, {option: 'downVote'}), category]);
+    }
+
+    handleDeletePost (post, event) {
+        event.stopPropagation();
+        const {deletePost, category} = this.props;
+        deletePost([post, category]);
+    }
+
+    handleEditPost (post, event) {
+        event.stopPropagation();
+        const {history} = this.props;
+        history.push('/post/form', {postId: post.id});
     }
 
     getDate (timestamp) {
@@ -109,6 +125,21 @@ class PostList extends Component {
                                             </FontIcon>
                                         </IconButton>
                                     </div>
+                                    <div style={{display:'flex'}}>
+                                        <IconButton
+                                            iconClassName="material-icons"
+                                            tooltip="Edit"
+                                            onClick={this.handleEditPost.bind(this, post)}>
+                                                edit
+                                        </IconButton>   
+                                        <IconButton
+                                            tooltip="Delete"
+                                            onClick={this.handleDeletePost.bind(this, post)}>
+                                            <FontIcon className="material-icons" color={red500}>
+                                                delete
+                                            </FontIcon>
+                                        </IconButton>
+                                    </div>
                                     <div style={{display:'flex', alignItems: 'center', flexDirection: 'column-reverse'}}>
                                         <Avatar backgroundColor={gray200} size={25}>
                                             {post.commentCount}
@@ -137,6 +168,7 @@ function mapDispatchToProps (dispatch) {
     return {
         getPosts: (data) => dispatch(fetchPosts(data)),
         votePost: (data) => dispatch(votePost(data)),
+        deletePost: (data) => dispatch(deletePost(data)),
         updateSortOrder: (data) => dispatch(updateSortOrder(data))
     }
 }
