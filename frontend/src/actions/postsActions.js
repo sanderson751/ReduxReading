@@ -33,6 +33,7 @@ export const fetchPost = (id) => {
       .then(response => {
         dispatch(getPost(response.data));
         dispatch(fetchComments(response.data.id));
+        return response.data;
       })
       .catch(error => {
         throw(error);
@@ -84,7 +85,8 @@ export const votePost = (data) => {
   return (dispatch) => {
     return axios.post(`http://localhost:3001/posts/${post.id}`, post, {headers: { 'Authorization': 'ABC1234'}})
       .then(response => {
-        dispatch(fetchPosts(category))
+        dispatch(fetchPosts(category));
+        dispatch(getPost(response.data));
       })
       .catch(error => {
         throw(error);

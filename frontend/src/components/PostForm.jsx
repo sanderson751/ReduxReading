@@ -10,12 +10,12 @@ import PostFormBodyComponents from './PostFormBodyComponents';
 class PostForm extends Component {
     
     componentDidMount () {
-        const {location, getCategories, getPostById} = this.props;
+        const {match, getCategories, getPostById} = this.props;
         getCategories && getCategories();
-        getPostById && getPostById(location.state.postId ? location.state.postId : '');
+        getPostById && getPostById(match.params.post_id ? match.params.post_id : '');
         
-        if (location.state.category) {
-            this._category = location.state.category;
+        if (match.params.category) {
+            this._category = match.params.category;
         }
     }
 
@@ -35,7 +35,7 @@ class PostForm extends Component {
     }
 
     render () {
-        const {post, categories, history, location} = this.props;
+        const {post, categories, history, match} = this.props;
         return (
             <div>
                 <AppBar
@@ -45,7 +45,7 @@ class PostForm extends Component {
                 />
                 <div className="container">
                     <Paper zDepth={1} style={{margin: '10px'}}>
-                        <PostFormBodyComponents key={`${post.id}_${location.state.postId}`} category={this._category} categories={categories} post={post} onChange={this.handleFormBodyChange}/>
+                        <PostFormBodyComponents key={`${post.id}_${match.params.post_id}`} category={this._category} categories={categories} post={post} onChange={this.handleFormBodyChange}/>
                     </Paper>
                 </div>
             </div>

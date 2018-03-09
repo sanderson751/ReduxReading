@@ -18,7 +18,7 @@ class App extends Component {
   
   handleClickCategory  = (category) => {
     const {history} = this.props;
-    history && history.push('/category', {category: category.path});
+    history && history.push(`/${category.path}`);
   }
 
   render() {
@@ -37,10 +37,10 @@ class App extends Component {
               </div>
           </div>
         )}/>
-        <Route exact path='/category' component={CategoryView} />
-        <Route exact path='/post/detail' component={PostDetail} />
-        <Route exact path='/post/form' component={PostForm} />
-        <Route exact path='/post/form/new' component={PostForm} />
+        <Route exact path='/:category' component={CategoryView} />
+        <Route exact path='/:category/:post_id' component={PostDetail} />
+        <Route exact path='/post/form/:post_id' component={PostForm} />
+        <Route exact path='/post/new/:category' component={PostForm} />
       </Switch>
     )
   }

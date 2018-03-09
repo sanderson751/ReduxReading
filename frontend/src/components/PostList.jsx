@@ -24,13 +24,13 @@ class PostList extends Component {
     }
 
     handlePostItemClick = (post) => {
-        const {history} = this.props;
-        history && history.push('/post/detail', {postId: post.id});
+        const {history, category} = this.props;
+        history && history.push(category ? `/${category}/${post.id}`: `/${post.category}/${post.id}`);
     }
 
     handleNewPostClick = (category) => {
         const {history} = this.props;
-        history && history.push(`/post/form/new`, {category});
+        history && history.push(`/post/new/${category ? category : '_new'}`);
     }
 
     handleChangeDropDownMenu = (event, index, sortOrder) => {
@@ -59,7 +59,7 @@ class PostList extends Component {
     handleEditPost (post, event) {
         event.stopPropagation();
         const {history} = this.props;
-        history.push('/post/form', {postId: post.id});
+        history.push(`/post/form/${post.id}`);
     }
 
     getDate (timestamp) {

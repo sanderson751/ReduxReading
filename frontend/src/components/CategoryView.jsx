@@ -5,16 +5,16 @@ import {AppBar, IconButton, FontIcon} from 'material-ui';
 class CategoryView extends Component {
   
   render() {
-    const {location, history} = this.props;
+    const {match, history} = this.props;
     return (
       <div>
         <AppBar
-            title={`Redux-Reading - ${location.state.category}`}
+            title={`Redux-Reading - ${match.params.category}`}
             iconElementLeft={<IconButton><FontIcon className="material-icons">arrow_back</FontIcon></IconButton>}
             onLeftIconButtonClick={() => {history.goBack()}}
         />
         <div className="container">
-          <PostList category={location.state.category} />
+          <PostList category={match.params.category} />
         </div>
       </div>
     )
